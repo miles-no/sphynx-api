@@ -1,0 +1,817 @@
+swagger: '2.0'
+
+info:
+  version: "1.0.0"
+  title: Sphynx API
+
+consumes:
+  - application/json
+produces:
+  - application/json
+
+paths:
+  /{site}/pages:
+    get:
+      description: |
+        Gets `Page` objects from the live storage.
+        Optional query param of **limit** determines
+        size of returned array
+      parameters:
+        - name: site
+          in: path
+          description: The name of the site. Used for grouping pages
+          required: true
+          type: string
+        - name: limit
+          in: query
+          description: Number of items in the result (default 20)
+          required: false
+          type: number
+          format: int32
+          default: 20
+        - name: offset
+          in: query
+          description: Number of items to skip in the result (default 0)
+          required: false
+          type: number
+          format: int32
+          default: 0
+        - name: query
+          in: query
+          description: TODO - Specify query param
+          required: false
+          type: string
+      responses:
+        200:
+          description: Successful response. Empty array when no pages found
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Page'
+        500:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+
+  /{site}/pages/{path}:
+    get:
+      description: |
+        Gets `Page` object from the live storage.
+      parameters:
+        - name: site
+          in: path
+          description: The name of the site. Used for grouping pages
+          required: true
+          type: string
+        - name: path
+          in: path
+          description: URL-encoded path of page
+          required: true
+          type: string
+        - name: mergeModuleDefinitions
+          in: query
+          description: TODO
+          required: false
+          type: boolean
+      responses:
+        200:
+          description: Successful response
+          schema:
+            $ref: '#/definitions/Page'
+        404:
+          description: Page with given path is not found
+        500:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+    delete:
+      description: Remove `Page` object from the live storage.
+      parameters:
+        - name: site
+          in: path
+          description: The name of the site. Used for grouping pages
+          required: true
+          type: string
+        - name: path
+          in: path
+          description: Path of page
+          required: true
+          type: string
+      responses:
+        204:
+          description: Page successfully deleted
+        401:
+          description: The request requires an user authentication
+        403:
+          description: The server understood the request, but is refusing it or the access is not allowed
+        404:
+          description: Page with given path is not found
+        500:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+
+  /drafts/{site}/pages:
+    get:
+      description: |
+        Gets `Page` objects from the drafts storage.
+        Optional query param of **limit** determines
+        size of returned array
+      parameters:
+        - name: site
+          in: path
+          description: The name of the site. Used for grouping pages
+          required: true
+          type: string
+        - name: limit
+          in: query
+          description: Number of items in the result (default 20)
+          required: false
+          type: number
+          format: int32
+          default: 20
+        - name: offset
+          in: query
+          description: Number of items to skip in the result (default 0)
+          required: false
+          type: number
+          format: int32
+          default: 0
+        - name: query
+          in: query
+          description: TODO - Specify query param
+          required: false
+          type: string
+      responses:
+        200:
+          description: Successful response. Empty array when no pages found
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Page'
+        401:
+          description: The request requires an user authentication
+        403:
+          description: The server understood the request, but is refusing it or the access is not allowed
+        500:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+    post:
+      description: Add new `Page` object in the drafts storage.
+      parameters:
+        - name: site
+          in: path
+          description: The name of the site. Used for grouping pages
+          required: true
+          type: string
+        - name: page
+          in: body
+          description: The page JSON
+          schema:
+            $ref: '#/definitions/Page'
+          required: true
+      responses:
+        201:
+          description: New page successfully created
+        401:
+          description: The request requires an user authentication
+        403:
+          description: The server understood the request, but is refusing it or the access is not allowed
+        409:
+          description: The request could not be completed due to a conflict with the current state of the resource (e.g. path already exists)
+        500:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+
+  /drafts/{site}/pages/{path}:
+    get:
+      description: |
+        Gets `Page` object from the drafts storage.
+      parameters:
+        - name: site
+          in: path
+          description: The name of the site. Used for grouping pages
+          required: true
+          type: string
+        - name: path
+          in: path
+          description: URL-encoded path of page
+          required: true
+          type: string
+        - name: mergeModuleDefinitions
+          in: query
+          description: TODO
+          required: false
+          type: boolean
+      responses:
+        200:
+          description: Successful response
+          schema:
+            $ref: '#/definitions/Page'
+        401:
+          description: The request requires an user authentication
+        403:
+          description: The server understood the request, but is refusing it or the access is not allowed
+        404:
+          description: Page with given path is not found
+        500:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+    put:
+      description: |
+        Update `Page` object in the drafts storage.
+      parameters:
+        - name: site
+          in: path
+          description: The name of the site. Used for grouping pages
+          required: true
+          type: string
+        - name: path
+          in: path
+          description: Path of page
+          required: true
+          type: string
+        - name: page
+          in: body
+          description: The page JSON
+          schema:
+            $ref: '#/definitions/Page'
+          required: true
+      responses:
+        204:
+          description: Page successfully updated
+        401:
+          description: The request requires an user authentication
+        403:
+          description: The server understood the request, but is refusing it or the access is not allowed
+        404:
+          description: Page with given path is not found
+        409:
+          description: The request could not be completed due to a conflict with the current state of the resource (e.g. path already exists)
+        500:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+    delete:
+      description: Remove `Page` object from the drafts storage.
+      parameters:
+        - name: site
+          in: path
+          description: The name of the site. Used for grouping pages
+          required: true
+          type: string
+        - name: path
+          in: path
+          description: Path of page
+          required: true
+          type: string
+      responses:
+        204:
+          description: Page successfully deleted
+        401:
+          description: The request requires an user authentication
+        403:
+          description: The server understood the request, but is refusing it or the access is not allowed
+        404:
+          description: Page with given path is not found
+        500:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+
+  /drafts/{site}/pages/{path}/publish:
+    post:
+      description: |
+        Publish the specified page, e.g. copy it from the draft storage to the live storage.
+      parameters:
+        - name: site
+          in: path
+          description: The name of the site. Used for grouping pages
+          required: true
+          type: string
+        - name: path
+          in: path
+          description: Path of page
+          required: true
+          type: string
+      responses:
+        204:
+          description: Page successfully published
+        401:
+          description: The request requires an user authentication
+        403:
+          description: The server understood the request, but is refusing it or the access is not allowed
+        404:
+          description: Page with given path is not found
+        500:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+
+  /{site}/modules:
+    get:
+      description: |
+        Gets `Module` objects.
+        Optional query param of **limit** determines
+        size of returned array
+      parameters:
+        - name: site
+          in: path
+          description: The name of the site. Used for grouping pages
+          required: true
+          type: string
+        - name: limit
+          in: query
+          description: Number of items in the result (default 20)
+          required: false
+          type: number
+          format: int32
+          default: 20
+        - name: offset
+          in: query
+          description: Number of items to skip in the result (default 0)
+          required: false
+          type: number
+          format: int32
+          default: 0
+        - name: query
+          in: query
+          description: TODO - Specify query param
+          required: false
+          type: string
+      responses:
+        200:
+          description: Successful response. Empty array when no modules found
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Module'
+        500:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+    post:
+      parameters:
+        - name: site
+          in: path
+          description: The name of the site. Used for grouping modules
+          required: true
+          type: string
+        - name: module
+          in: body
+          description: The module JSON
+          schema:
+            $ref: '#/definitions/Module'
+          required: true
+      responses:
+        201:
+          description: New module successfully created
+        401:
+          description: The request requires an user authentication
+        403:
+          description: The server understood the request, but is refusing it or the access is not allowed
+        409:
+          description: The request could not be completed due to a conflict with the current state of the resource (e.g. key already exists)
+        500:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+
+  /{site}/modules/{key}:
+    get:
+      description: |
+        Gets `Module` object.
+      parameters:
+        - name: site
+          in: path
+          description: The name of the site. Used for grouping modules
+          required: true
+          type: string
+        - name: key
+          in: path
+          description: Key of module
+          required: true
+          type: string
+      responses:
+        200:
+          description: Successful response
+          schema:
+            $ref: '#/definitions/Module'
+        404:
+          description: Module with given key is not found
+        500:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+    put:
+      parameters:
+        - name: site
+          in: path
+          description: The name of the site. Used for grouping modules
+          required: true
+          type: string
+        - name: key
+          in: path
+          description: Key of module
+          required: true
+          type: string
+        - name: module
+          in: body
+          description: The module JSON
+          schema:
+            $ref: '#/definitions/Module'
+          required: true
+      responses:
+        204:
+          description: Module successfully updated
+        401:
+          description: The request requires an user authentication
+        403:
+          description: The server understood the request, but is refusing it or the access is not allowed
+        404:
+          description: Module with given key is not found
+        409:
+          description: The request could not be completed due to a conflict with the current state of the resource (e.g. key already exists)
+        500:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+    delete:
+      parameters:
+        - name: site
+          in: path
+          description: The name of the site. Used for grouping modules
+          required: true
+          type: string
+        - name: key
+          in: path
+          description: Key of module
+          required: true
+          type: string
+      responses:
+        204:
+          description: Module successfully deleted
+        401:
+          description: The request requires an user authentication
+        403:
+          description: The server understood the request, but is refusing it or the access is not allowed
+        404:
+          description: Module with given key is not found
+        500:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+
+  /{site}/layouts:
+    get:
+      description: |
+        Gets `Layout` objects.
+        Optional query param of **limit** determines
+        size of returned array
+      parameters:
+        - name: site
+          in: path
+          description: The name of the site. Used for grouping pages
+          required: true
+          type: string
+        - name: limit
+          in: query
+          description: Number of items in the result (default 20)
+          required: false
+          type: number
+          format: int32
+          default: 20
+        - name: offset
+          in: query
+          description: Number of items to skip in the result (default 0)
+          required: false
+          type: number
+          format: int32
+          default: 0
+        - name: query
+          in: query
+          description: TODO - Specify query param
+          required: false
+          type: string
+      responses:
+        200:
+          description: Successful response. Empty array when no layouts found
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Layout'
+        500:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+    post:
+      parameters:
+        - name: site
+          in: path
+          description: The name of the site
+          required: true
+          type: string
+        - name: layout
+          in: body
+          description: The layout JSON
+          schema:
+            $ref: '#/definitions/Layout'
+          required: true
+      responses:
+        201:
+          description: New module successfully created
+        401:
+          description: The request requires an user authentication
+        403:
+          description: The server understood the request, but is refusing it or the access is not allowed
+        409:
+          description: The request could not be completed due to a conflict with the current state of the resource (e.g. name already exists)
+        500:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+
+  /{site}/layouts/{name}:
+    get:
+      description: |
+        Gets `Layout` object.
+      parameters:
+        - name: site
+          in: path
+          description: The name of the site
+          required: true
+          type: string
+        - name: name
+          in: path
+          description: Name of layout
+          required: true
+          type: string
+      responses:
+        200:
+          description: Successful response
+          schema:
+            $ref: '#/definitions/Layout'
+        404:
+          description: Layout with given name is not found
+        500:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+    put:
+      parameters:
+        - name: site
+          in: path
+          description: The name of the site
+          required: true
+          type: string
+        - name: name
+          in: path
+          description: Name of layout
+          required: true
+          type: string
+        - name: layout
+          in: body
+          description: The layout JSON
+          schema:
+            $ref: '#/definitions/Layout'
+          required: true
+      responses:
+        204:
+          description: Module successfully updated
+        401:
+          description: The request requires an user authentication
+        403:
+          description: The server understood the request, but is refusing it or the access is not allowed
+        404:
+          description: Layout with given name is not found
+        409:
+          description: The request could not be completed due to a conflict with the current state of the resource (e.g. name already exists)
+        500:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+    delete:
+      parameters:
+        - name: site
+          in: path
+          description: The name of the site. Used for grouping modules
+          required: true
+          type: string
+        - name: name
+          in: path
+          description: Name of layout
+          required: true
+          type: string
+      responses:
+        204:
+          description: Layout successfully deleted
+        401:
+          description: The request requires an user authentication
+        403:
+          description: The server understood the request, but is refusing it or the access is not allowed
+        404:
+          description: Layout with given name is not found
+        500:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+
+  /{site}/page-templates:
+    get:
+      description: |
+        Gets `PageTemplate` objects.
+        Optional query param of **limit** determines
+        size of returned array
+      parameters:
+        - name: site
+          in: path
+          description: The name of the site
+          required: true
+          type: string
+        - name: limit
+          in: query
+          description: Number of items in the result (default 20)
+          required: false
+          type: number
+          format: int32
+          default: 20
+        - name: offset
+          in: query
+          description: Number of items to skip in the result (default 0)
+          required: false
+          type: number
+          format: int32
+          default: 0
+        - name: query
+          in: query
+          description: TODO - Specify query param
+          required: false
+          type: string
+      responses:
+        200:
+          description: Successful response. Empty array when no layouts found
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/PageTemplate'
+        500:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+    post:
+      parameters:
+        - name: site
+          in: path
+          description: The name of the site
+          required: true
+          type: string
+        - name: page-template
+          in: body
+          description: The page-template JSON
+          schema:
+            $ref: '#/definitions/PageTemplate'
+          required: true
+      responses:
+        201:
+          description: New page-template successfully created
+        401:
+          description: The request requires an user authentication
+        403:
+          description: The server understood the request, but is refusing it or the access is not allowed
+        409:
+          description: The request could not be completed due to a conflict with the current state of the resource (e.g. name already exists)
+        500:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+
+  /{site}/page-templates/{name}:
+    get:
+      description: |
+        Gets `Layout` object.
+      parameters:
+        - name: site
+          in: path
+          description: The name of the site
+          required: true
+          type: string
+        - name: name
+          in: path
+          description: Name of page-template
+          required: true
+          type: string
+      responses:
+        200:
+          description: Successful response
+          schema:
+            $ref: '#/definitions/PageTemplate'
+        404:
+          description: Page-template with given name is not found
+        500:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+    put:
+      parameters:
+        - name: site
+          in: path
+          description: The name of the site
+          required: true
+          type: string
+        - name: name
+          in: path
+          description: Name of page-template
+          required: true
+          type: string
+        - name: layout
+          in: body
+          description: The page-template JSON
+          schema:
+            $ref: '#/definitions/PageTemplate'
+          required: true
+      responses:
+        204:
+          description: Page-template successfully updated
+        401:
+          description: The request requires an user authentication
+        403:
+          description: The server understood the request, but is refusing it or the access is not allowed
+        404:
+          description: Page-template with given name is not found
+        409:
+          description: The request could not be completed due to a conflict with the current state of the resource (e.g. page-template already exists)
+        500:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+    delete:
+      parameters:
+        - name: site
+          in: path
+          description: The name of the site
+          required: true
+          type: string
+        - name: name
+          in: path
+          description: Name of page-template
+          required: true
+          type: string
+      responses:
+        204:
+          description: Page-template successfully deleted
+        401:
+          description: The request requires an user authentication
+        403:
+          description: The server understood the request, but is refusing it or the access is not allowed
+        404:
+          description: Page-template with given name is not found
+        500:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+
+definitions:
+  Page:
+    description: In addition to `path`, any other properties on the object are valid
+    required:
+      - path
+    properties:
+      path:
+        type: string
+        description: Unique identifier representing a specific page
+  Module:
+    description: In addition to `key`, any other properties on the object are valid
+    required:
+      - key
+    properties:
+      key:
+        type: string
+        description: Unique identifier representing a specific module
+  PageTemplate:
+    description: In addition to `name`, any other properties on the object are valid
+    required:
+      - name
+    properties:
+      name:
+        type: string
+        description: Unique identifier representing a page template
+  Layout:
+    required:
+      - name
+      - layout
+    properties:
+      name:
+        type: string
+        description: Unique identifier representing a page template
+      layout:
+        type: string
+        description: HTML code
+  Error:
+    required:
+      - message
+    properties:
+      message:
+        type: string
