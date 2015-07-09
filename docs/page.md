@@ -108,7 +108,7 @@ Example of a page object. Note that properties may vary
          * @type Object
          */
         "options": null
-        }]
+      }]
     }
   }
 }
