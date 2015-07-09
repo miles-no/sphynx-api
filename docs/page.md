@@ -1,3 +1,5 @@
+Example of a page object. Note that properties may vary
+
 ```js
 {
   /**
