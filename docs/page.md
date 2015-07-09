@@ -46,22 +46,68 @@ Example of a page object. Note that properties may vary
    * @type String
    */
   "footFragment": null,
-  "options": {
-
-  }
+  /**
+   * Object containing various options for the page. Can be anything really
+   * @type Object
+   */
+  "options": null
+  /**
+   * Dependencies to load for this page
+   * @type Object
+   */
   "dependencies": {
-    "css": [],
-    "js": []
+    /**
+     * List of stylesheets
+     * @type Array of strings
+     */
+    "css": null,
+    /**
+     * List of JavaScript files
+     * @type Array of strings
+     */
+    "js": null
   },
+  /**
+   * Dependencies to load for this page when in admin or inline edit mode
+   * @type Object
+   */
   "adminDependencies": {
-    "css": [],
-    "js": []
+    /**
+     * List of stylesheets
+     * @type Array of strings
+     */
+    "css": null,
+    /**
+     * List of JavaScript files
+     * @type Array of strings
+     */
+    "js": null
   },
+  /**
+   * Object describing the different sections in the page and which modules to load into each section
+   * @type Object
+   */
   "sections":{
+    /**
+     * Name of the section. Can be anything really
+     * @type String
+     */
     "<main>": {
+      /**
+       * Array of modules in the section
+       * @type Array of bjects
+       */
       "modules": [{
+        /**
+         * The key of the module definition
+         * @type string
+         */
         "key": null
-        "options": {}
+        /**
+         * Options specific to this instance of the module
+         * @type Object
+         */
+        "options": null
         }]
     }
   }
