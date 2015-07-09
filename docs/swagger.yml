@@ -19,7 +19,7 @@ paths:
       parameters:
         - name: site
           in: path
-          description: The name of the site. Used for grouping pages
+          description: The name of the site
           required: true
           type: string
         - name: limit
@@ -60,7 +60,7 @@ paths:
       parameters:
         - name: site
           in: path
-          description: The name of the site. Used for grouping pages
+          description: The name of the site
           required: true
           type: string
         - name: path
@@ -70,7 +70,12 @@ paths:
           type: string
         - name: mergeModuleDefinitions
           in: query
-          description: TODO
+          description: When true, merge the module definitions into the module arrays in page
+          required: false
+          type: boolean
+        - name: includeLayout
+          in: query
+          description: When true, include the layout HTML in the response
           required: false
           type: boolean
       responses:
@@ -85,16 +90,16 @@ paths:
           schema:
             $ref: '#/definitions/Error'
     delete:
-      description: Remove `Page` object from the live storage.
+      description: Remove `Page` object from the live storage and update published flag on page in draft storage.
       parameters:
         - name: site
           in: path
-          description: The name of the site. Used for grouping pages
+          description: The name of the site
           required: true
           type: string
         - name: path
           in: path
-          description: Path of page
+          description: URL-encoded path of page
           required: true
           type: string
       responses:
@@ -120,7 +125,7 @@ paths:
       parameters:
         - name: site
           in: path
-          description: The name of the site. Used for grouping pages
+          description: The name of the site
           required: true
           type: string
         - name: limit
@@ -162,7 +167,7 @@ paths:
       parameters:
         - name: site
           in: path
-          description: The name of the site. Used for grouping pages
+          description: The name of the site
           required: true
           type: string
         - name: page
@@ -192,7 +197,7 @@ paths:
       parameters:
         - name: site
           in: path
-          description: The name of the site. Used for grouping pages
+          description: The name of the site
           required: true
           type: string
         - name: path
@@ -202,7 +207,12 @@ paths:
           type: string
         - name: mergeModuleDefinitions
           in: query
-          description: TODO
+          description: When true, merge the module definitions into the module arrays in page
+          required: false
+          type: boolean
+        - name: includeLayout
+          in: query
+          description: When true, include the layout HTML in the response
           required: false
           type: boolean
       responses:
@@ -226,12 +236,12 @@ paths:
       parameters:
         - name: site
           in: path
-          description: The name of the site. Used for grouping pages
+          description: The name of the site
           required: true
           type: string
         - name: path
           in: path
-          description: Path of page
+          description: URL-encoded path of page
           required: true
           type: string
         - name: page
@@ -260,12 +270,12 @@ paths:
       parameters:
         - name: site
           in: path
-          description: The name of the site. Used for grouping pages
+          description: The name of the site
           required: true
           type: string
         - name: path
           in: path
-          description: Path of page
+          description: URL-encoded path of page
           required: true
           type: string
       responses:
@@ -285,16 +295,16 @@ paths:
   /drafts/{site}/pages/{path}/publish:
     post:
       description: |
-        Publish the specified page, e.g. copy it from the draft storage to the live storage.
+        Update the `lastEdited` and `published` properties on the specified page in the draft storage and publish it, e.g. copy it from the draft storage to the live storage.
       parameters:
         - name: site
           in: path
-          description: The name of the site. Used for grouping pages
+          description: The name of the site
           required: true
           type: string
         - name: path
           in: path
-          description: Path of page
+          description: URL-encoded path of page
           required: true
           type: string
       responses:
@@ -311,18 +321,23 @@ paths:
           schema:
             $ref: '#/definitions/Error'
 
-  /{site}/modules:
+  /{site}/module-definitions:
     get:
       description: |
-        Gets `Module` objects.
+        Gets `ModuleDefinition` objects.
         Optional query param of **limit** determines
         size of returned array
       parameters:
         - name: site
           in: path
-          description: The name of the site. Used for grouping pages
+          description: The name of the site
           required: true
           type: string
+        - name: all
+          in: query
+          description: When true, skip paging and return all module definitions for the specified site
+          required: false
+          type: boolean
         - name: limit
           in: query
           description: Number of items in the result (default 20)
@@ -344,31 +359,32 @@ paths:
           type: string
       responses:
         200:
-          description: Successful response. Empty array when no modules found
+          description: Successful response. Empty array when no module definitions found
           schema:
             type: array
             items:
-              $ref: '#/definitions/Module'
+              $ref: '#/definitions/ModuleDefinition'
         500:
           description: Unexpected error
           schema:
             $ref: '#/definitions/Error'
     post:
+      description: Add new `ModuleDefinition` object.
       parameters:
         - name: site
           in: path
-          description: The name of the site. Used for grouping modules
+          description: The name of the site
           required: true
           type: string
-        - name: module
+        - name: module-definition
           in: body
-          description: The module JSON
+          description: The module definition JSON
           schema:
-            $ref: '#/definitions/Module'
+            $ref: '#/definitions/ModuleDefinition'
           required: true
       responses:
         201:
-          description: New module successfully created
+          description: New module definition successfully created
         401:
           description: The request requires an user authentication
         403:
@@ -380,59 +396,60 @@ paths:
           schema:
             $ref: '#/definitions/Error'
 
-  /{site}/modules/{key}:
+  /{site}/module-definitions/{key}:
     get:
       description: |
-        Gets `Module` object.
+        Gets `ModuleDefinition` object.
       parameters:
         - name: site
           in: path
-          description: The name of the site. Used for grouping modules
+          description: The name of the site
           required: true
           type: string
         - name: key
           in: path
-          description: Key of module
+          description: Key of module definition
           required: true
           type: string
       responses:
         200:
           description: Successful response
           schema:
-            $ref: '#/definitions/Module'
+            $ref: '#/definitions/ModuleDefinition'
         404:
-          description: Module with given key is not found
+          description: Module definition with given key is not found
         500:
           description: Unexpected error
           schema:
             $ref: '#/definitions/Error'
     put:
+      description: Update `ModeuleDefinition` object.
       parameters:
         - name: site
           in: path
-          description: The name of the site. Used for grouping modules
+          description: The name of the site
           required: true
           type: string
         - name: key
           in: path
-          description: Key of module
+          description: Key of module definition
           required: true
           type: string
-        - name: module
+        - name: module-definition
           in: body
-          description: The module JSON
+          description: The module definition JSON
           schema:
-            $ref: '#/definitions/Module'
+            $ref: '#/definitions/ModuleDefinition'
           required: true
       responses:
         204:
-          description: Module successfully updated
+          description: Module definition successfully updated
         401:
           description: The request requires an user authentication
         403:
           description: The server understood the request, but is refusing it or the access is not allowed
         404:
-          description: Module with given key is not found
+          description: Module definition with given key is not found
         409:
           description: The request could not be completed due to a conflict with the current state of the resource (e.g. key already exists)
         500:
@@ -440,26 +457,27 @@ paths:
           schema:
             $ref: '#/definitions/Error'
     delete:
+      description: Remove `ModeuleDefinition` object.
       parameters:
         - name: site
           in: path
-          description: The name of the site. Used for grouping modules
+          description: The name of the site
           required: true
           type: string
         - name: key
           in: path
-          description: Key of module
+          description: Key of module definition
           required: true
           type: string
       responses:
         204:
-          description: Module successfully deleted
+          description: Module definition successfully deleted
         401:
           description: The request requires an user authentication
         403:
           description: The server understood the request, but is refusing it or the access is not allowed
         404:
-          description: Module with given key is not found
+          description: Module definition with given key is not found
         500:
           description: Unexpected error
           schema:
@@ -474,9 +492,14 @@ paths:
       parameters:
         - name: site
           in: path
-          description: The name of the site. Used for grouping pages
+          description: The name of the site
           required: true
           type: string
+        - name: all
+          in: query
+          description: When true, skip paging and return all layouts for the specified site
+          required: false
+          type: boolean
         - name: limit
           in: query
           description: Number of items in the result (default 20)
@@ -508,6 +531,7 @@ paths:
           schema:
             $ref: '#/definitions/Error'
     post:
+      description: Add new `Layout` object.
       parameters:
         - name: site
           in: path
@@ -522,7 +546,7 @@ paths:
           required: true
       responses:
         201:
-          description: New module successfully created
+          description: New layout successfully created
         401:
           description: The request requires an user authentication
         403:
@@ -561,6 +585,7 @@ paths:
           schema:
             $ref: '#/definitions/Error'
     put:
+      description: Update `Layout` object.
       parameters:
         - name: site
           in: path
@@ -580,7 +605,7 @@ paths:
           required: true
       responses:
         204:
-          description: Module successfully updated
+          description: Layout successfully updated
         401:
           description: The request requires an user authentication
         403:
@@ -594,6 +619,7 @@ paths:
           schema:
             $ref: '#/definitions/Error'
     delete:
+      description: Remove `Layout` object.
       parameters:
         - name: site
           in: path
@@ -631,6 +657,11 @@ paths:
           description: The name of the site
           required: true
           type: string
+        - name: all
+          in: query
+          description: When true, skip paging and return all page-templates for the specified site
+          required: false
+          type: boolean
         - name: limit
           in: query
           description: Number of items in the result (default 20)
@@ -662,6 +693,7 @@ paths:
           schema:
             $ref: '#/definitions/Error'
     post:
+      description: Add new `PageTemplate` object.
       parameters:
         - name: site
           in: path
@@ -691,7 +723,7 @@ paths:
   /{site}/page-templates/{name}:
     get:
       description: |
-        Gets `Layout` object.
+        Gets `PageTemplate` object.
       parameters:
         - name: site
           in: path
@@ -715,6 +747,7 @@ paths:
           schema:
             $ref: '#/definitions/Error'
     put:
+      description: Update `PageTemplate` object.
       parameters:
         - name: site
           in: path
@@ -748,6 +781,7 @@ paths:
           schema:
             $ref: '#/definitions/Error'
     delete:
+      description: Remove `PageTemplate` object.
       parameters:
         - name: site
           in: path
@@ -775,29 +809,49 @@ paths:
 
 definitions:
   Page:
-    description: In addition to `path`, any other properties on the object are valid
+    description: In addition to the specified properties, any other properties on the object are valid
     required:
       - path
     properties:
       path:
         type: string
         description: Unique identifier representing a specific page
-  Module:
-    description: In addition to `key`, any other properties on the object are valid
+      title:
+        type: string
+        description: Title of the page
+      layoutName:
+        type: string
+        description: Name of the layout used for this page
+      layout:
+        type: string
+        description: When `includeLayout` is true, populate this with the HTML content from layout with specified name. Layout should NOT be stored on page.
+      published:
+        type: boolean
+        description: Set to true when a page is published, and to false when a page is deleted from live storage
+      lastEdited:
+        type: string
+        format: dateTime
+        description: ISO-formatted date and time for last publish
+  ModuleDefinition:
+    description: In addition to the specified properties, any other properties on the object are valid
     required:
       - key
     properties:
       key:
         type: string
-        description: Unique identifier representing a specific module
+        description: Unique identifier representing a specific module definition
   PageTemplate:
-    description: In addition to `name`, any other properties on the object are valid
     required:
       - name
+      - template
     properties:
       name:
         type: string
         description: Unique identifier representing a page template
+      template: 
+        type: object
+        format: JSON
+        description: The template JSON
   Layout:
     required:
       - name
@@ -805,7 +859,7 @@ definitions:
     properties:
       name:
         type: string
-        description: Unique identifier representing a page template
+        description: Unique identifier representing a layout
       layout:
         type: string
         description: HTML code
