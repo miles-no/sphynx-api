@@ -1,3 +1,5 @@
+Example of a module definition object. Note that properties may vary
+
 ```js
 {
   "key": null,
